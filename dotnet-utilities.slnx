@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/.solution/">
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="src/Csharp/Csharp.csproj" Id="ed9a20a7-7f89-43a9-b25b-05a38da22cd4" />
+</Solution>
