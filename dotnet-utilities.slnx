@@ -2,7 +2,14 @@
   <Folder Name="/.solution/">
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
+    <File Path="global.json" />
+    <File Path="LICENSE.txt" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="src/Csharp/Csharp.csproj" Id="ed9a20a7-7f89-43a9-b25b-05a38da22cd4" />
+  <Folder Name="/src/">
+    <Project Path="src/Csharp/Csharp.csproj" Id="ed9a20a7-7f89-43a9-b25b-05a38da22cd4" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Csharp.Test/Csharp.Test.csproj" Id="3f8de9c6-8f1c-4aea-b6a4-bc64f29b7933" />
+  </Folder>
 </Solution>

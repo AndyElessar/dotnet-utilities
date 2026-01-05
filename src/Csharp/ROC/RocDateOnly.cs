@@ -494,10 +494,10 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
         if(string.IsNullOrEmpty(format))
             return ToShortDateString();
 
-        // 處理民國年份格式 (yyy)
+        // 處理年份格式 (yyyy 必須在 yyy 之前處理)
         var result = format
-            .Replace("yyy", Year.ToString("000"))
             .Replace("yyyy", CeYear.ToString("0000"))
+            .Replace("yyy", Year.ToString("000"))
             .Replace("MM", Month.ToString("00"))
             .Replace("dd", Day.ToString("00"))
             .Replace("M", Month.ToString())
