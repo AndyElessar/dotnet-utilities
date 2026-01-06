@@ -5,25 +5,6 @@ Feel free to copy and use any code from this repository in your own projects!
 
 ## Features
 
-### Extension Methods
-
-Common extension methods for daily development:
-
-- **BoolExtensions**
-- **ControlFlowExtensions**
-- **DateTimeExtensions**
-- **EnumExtensions**
-- **FileExtensions**
-- **GenerateExtensions**
-- **IEnumerableExtensions**
-- **NullableTaskExtensions**
-- **NumberExtensions**
-- **ReflectionExtensions**
-- **SafeFireAndForgetExtensions**
-- **SortExtensions**
-- **StringExtensions**
-- **XmlExtensions**
-
 ### ROC (Republic of China) Calendar Types
 
 Custom date/time types for Taiwan's ROC calendar system:

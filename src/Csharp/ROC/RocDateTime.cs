@@ -518,34 +518,23 @@ public readonly struct RocDateTime(DateTime ceVal) :
         if(string.IsNullOrEmpty(format))
             return ToString();
 
-        // 建立民國年的 DateTime (用於格式化，但年份是民國年)
-        // 由於 DateTime 無法表示小於 1 的年份，我們需要特殊處理
-        var rocYear = Year;
-        if(rocYear is >= 1 and <= 9999)
-        {
-            try
-            {
-                var rocDateTime = new DateTime(rocYear, Month, Day, Hour, Minute, Second, Millisecond, Microsecond);
-                return rocDateTime.ToString(format, formatProvider);
-            }
-            catch
-            {
-                // 如果年份無效，使用手動格式化
-            }
-        }
-
-        // 手動處理格式字串中的年份
+        // 使用手動格式化以確保民國年格式一致
+        // yyyy => 4位數民國年 (0113), yyy => 3位數 (113), yy => 2位數 (13), y => 1位數 (3)
         return FormatManually(format);
     }
 
     private string FormatManually(string format)
     {
         // 簡單的格式化處理
+        // yyyy => 4位數民國年，補零 (例: 0113)
+        // yyy => 3位數民國年，補零 (例: 113)
+        // yy => 2位數，取後兩位 (例: 13)
+        // y => 1位數，取個位數 (例: 3)
         var result = format
             .Replace("yyyy", Year.ToString("D4"))
             .Replace("yyy", Year.ToString("D3"))
             .Replace("yy", (Year % 100).ToString("D2"))
-            .Replace("y", (Year % 100).ToString())
+            .Replace("y", (Year % 10).ToString())
             .Replace("MMMM", _ceVal.ToString("MMMM"))
             .Replace("MMM", _ceVal.ToString("MMM"))
             .Replace("MM", Month.ToString("D2"))

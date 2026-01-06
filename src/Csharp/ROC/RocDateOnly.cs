@@ -327,18 +327,8 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
         result = default;
         s = s.Trim();
 
-        // 嘗試解析格式: yyy/MM/dd, yyy-MM-dd, yyyMMdd
-        if(TryParseRocFormat(s, out result))
-            return true;
-
-        // 嘗試使用西元格式解析
-        if(DateOnly.TryParse(s, provider, DateTimeStyles.None, out var ceDate))
-        {
-            result = new RocDateOnly(ceDate);
-            return true;
-        }
-
-        return false;
+        // 只接受民國格式: yyy/MM/dd, yyy-MM-dd, yyyMMdd
+        return TryParseRocFormat(s, out result);
     }
 
     /// <summary>
@@ -418,7 +408,7 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
             }
         }
 
-        // 預期格式: yyyMMdd (7 位數) 或 yyyyMMdd (8 位數，西元)
+        // 預期格式: yyyMMdd (7 位數民國格式)
         if(digitCount == 7)
         {
             // 民國年格式: yyyMMdd
@@ -432,26 +422,6 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
             try
             {
                 result = new RocDateOnly(rocYear, month, day);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        else if(digitCount == 8)
-        {
-            // 可能是西元年格式: yyyyMMdd
-            if(!int.TryParse(digits[..4], out int year)) return false;
-            if(!int.TryParse(digits.Slice(4, 2), out int month)) return false;
-            if(!int.TryParse(digits.Slice(6, 2), out int day)) return false;
-
-            if(month < 1 || month > 12 || day < 1 || day > 31)
-                return false;
-
-            try
-            {
-                result = new RocDateOnly(new DateOnly(year, month, day));
                 return true;
             }
             catch
@@ -494,10 +464,16 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
         if(string.IsNullOrEmpty(format))
             return ToShortDateString();
 
-        // 處理年份格式 (yyyy 必須在 yyy 之前處理)
+        // 處理年份格式 (從最長到最短)
+        // yyyy => 4位數民國年，補零 (例: 0113)
+        // yyy => 3位數民國年，補零 (例: 113)
+        // yy => 2位數，取後兩位 (例: 13)
+        // y => 1位數，取個位數 (例: 3)
         var result = format
-            .Replace("yyyy", CeYear.ToString("0000"))
+            .Replace("yyyy", Year.ToString("0000"))
             .Replace("yyy", Year.ToString("000"))
+            .Replace("yy", (Year % 100).ToString("00"))
+            .Replace("y", (Year % 10).ToString())
             .Replace("MM", Month.ToString("00"))
             .Replace("dd", Day.ToString("00"))
             .Replace("M", Month.ToString())

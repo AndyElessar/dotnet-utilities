@@ -115,39 +115,55 @@ internal class RocDateTimeTests
     public async Task Now_ShouldReturnCurrentRocDateTime()
     {
         // Arrange
-        var before = DateTime.Now;
+        var fakeTime = new DateTimeOffset(2024, 7, 15, 10, 30, 0, TimeSpan.FromHours(8));
+        var timeProvider = new FakeTimeProvider(fakeTime);
 
         // Act
-        var rocNow = RocDateTime.Now;
+        var rocNow = timeProvider.GetRocNow();
 
         // Assert
-        var after = DateTime.Now;
-        var rocDateTime = rocNow.ToDateTime();
-        await Assert.That(rocDateTime).IsGreaterThanOrEqualTo(before);
-        await Assert.That(rocDateTime).IsLessThanOrEqualTo(after);
+        await Assert.That(rocNow.Year).IsEqualTo(113);
+        await Assert.That(rocNow.Month).IsEqualTo(7);
+        await Assert.That(rocNow.Day).IsEqualTo(15);
+        await Assert.That(rocNow.Hour).IsEqualTo(10);
+        await Assert.That(rocNow.Minute).IsEqualTo(30);
     }
 
     [Test]
     public async Task UtcNow_ShouldReturnCurrentUtcRocDateTime()
     {
+        // Arrange
+        var fakeTime = new DateTimeOffset(2024, 7, 15, 2, 30, 0, TimeSpan.Zero);
+        var timeProvider = new FakeTimeProvider(fakeTime);
+
         // Act
-        var rocUtcNow = RocDateTime.UtcNow;
+        var rocUtcNow = timeProvider.GetRocUtcNow();
 
         // Assert
         await Assert.That(rocUtcNow.Kind).IsEqualTo(DateTimeKind.Utc);
+        await Assert.That(rocUtcNow.Year).IsEqualTo(113);
+        await Assert.That(rocUtcNow.Month).IsEqualTo(7);
+        await Assert.That(rocUtcNow.Day).IsEqualTo(15);
+        await Assert.That(rocUtcNow.Hour).IsEqualTo(2);
+        await Assert.That(rocUtcNow.Minute).IsEqualTo(30);
     }
 
     [Test]
     public async Task Today_ShouldReturnTodaysRocDate()
     {
         // Arrange
-        var expectedCeDate = DateTime.Today;
+        var fakeTime = new DateTimeOffset(2024, 7, 15, 10, 30, 0, TimeSpan.FromHours(8));
+        var timeProvider = new FakeTimeProvider(fakeTime);
+        var expectedCeDate = new DateTime(2024, 7, 15);
 
         // Act
-        var today = RocDateTime.Today;
+        var today = timeProvider.GetRocToday();
 
         // Assert
         await Assert.That(today.ToDateTime().Date).IsEqualTo(expectedCeDate);
+        await Assert.That(today.Year).IsEqualTo(113);
+        await Assert.That(today.Month).IsEqualTo(7);
+        await Assert.That(today.Day).IsEqualTo(15);
     }
 
     [Test]
@@ -654,6 +670,60 @@ internal class RocDateTimeTests
         await Assert.That(result.Year).IsEqualTo(113);
     }
 
+    [Test]
+    public async Task Parse_CeDateFormat_ShouldThrowFormatException()
+    {
+        // Act & Assert - 西元日期格式應該解析失敗
+        await Assert.ThrowsAsync<FormatException>(async () =>
+        {
+            RocDateTime.Parse("2026-01-01");
+            await Task.CompletedTask;
+        });
+    }
+
+    [Test]
+    public async Task Parse_CeDateFormatWithTime_ShouldThrowFormatException()
+    {
+        // Act & Assert - 西元日期時間格式應該解析失敗
+        await Assert.ThrowsAsync<FormatException>(async () =>
+        {
+            RocDateTime.Parse("2026-01-07 14:30:45");
+            await Task.CompletedTask;
+        });
+    }
+
+    [Test]
+    public async Task Parse_CeDateFormatWithSlash_ShouldThrowFormatException()
+    {
+        // Act & Assert - 西元日期格式 (斜線分隔) 應該解析失敗
+        await Assert.ThrowsAsync<FormatException>(async () =>
+        {
+            RocDateTime.Parse("2026/01/07");
+            await Task.CompletedTask;
+        });
+    }
+
+    [Test]
+    public async Task TryParse_CeDateFormat_ShouldReturnFalse()
+    {
+        // Act
+        var success = RocDateTime.TryParse("2026-01-01", out _);
+
+        // Assert - 西元格式應該解析失敗
+        await Assert.That(success).IsFalse();
+    }
+
+    [Test]
+    public async Task Parse_CeDateFormatNoSeparator_ShouldThrowFormatException()
+    {
+        // Act & Assert - 西元8位數字格式應該解析失敗
+        await Assert.ThrowsAsync<FormatException>(async () =>
+        {
+            RocDateTime.Parse("20260101");
+            await Task.CompletedTask;
+        });
+    }
+
     #endregion
 
     #region Static Utility Methods Tests
@@ -766,6 +836,32 @@ internal class RocDateTimeTests
 
         // Assert
         await Assert.That(result).IsEqualTo("113/05/10");
+    }
+
+    [Test]
+    public async Task ToString_WithYearFormats_ShouldFormatCorrectly()
+    {
+        // Arrange
+        var rocDateTime = new RocDateTime(113, 5, 10, 14, 30, 45);
+
+        // Assert - yyyy => 0113, yyy => 113, yy => 13, y => 3
+        await Assert.That(rocDateTime.ToString("yyyy/MM/dd")).IsEqualTo("0113/05/10");
+        await Assert.That(rocDateTime.ToString("yyy/MM/dd")).IsEqualTo("113/05/10");
+        await Assert.That(rocDateTime.ToString("yy/MM/dd")).IsEqualTo("13/05/10");
+        await Assert.That(rocDateTime.ToString("y/MM/dd")).IsEqualTo("3/05/10");
+    }
+
+    [Test]
+    public async Task ToString_YearFormats_ShouldBeConsistent()
+    {
+        // Arrange - 民國 105 年
+        var rocDateTime = new RocDateTime(105, 3, 15);
+
+        // Assert - yyyy => 0105, yyy => 105, yy => 05, y => 5
+        await Assert.That(rocDateTime.ToString("yyyy")).IsEqualTo("0105");
+        await Assert.That(rocDateTime.ToString("yyy")).IsEqualTo("105");
+        await Assert.That(rocDateTime.ToString("yy")).IsEqualTo("05");
+        await Assert.That(rocDateTime.ToString("y")).IsEqualTo("5");
     }
 
     #endregion

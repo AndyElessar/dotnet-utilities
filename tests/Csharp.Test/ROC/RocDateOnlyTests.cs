@@ -159,13 +159,18 @@ internal class RocDateOnlyTests
     public async Task Today_ShouldReturnTodaysRocDate()
     {
         // Arrange
-        var expectedCeDate = DateOnly.FromDateTime(DateTime.Today);
+        var fakeTime = new DateTimeOffset(2024, 7, 15, 10, 30, 0, TimeSpan.FromHours(8));
+        var timeProvider = new FakeTimeProvider(fakeTime);
+        var expectedCeDate = new DateOnly(2024, 7, 15);
 
         // Act
-        var today = RocDateOnly.Today;
+        var today = timeProvider.GetRocDateOnlyToday();
 
         // Assert
         await Assert.That(today.CeDateOnly).IsEqualTo(expectedCeDate);
+        await Assert.That(today.Year).IsEqualTo(113);
+        await Assert.That(today.Month).IsEqualTo(7);
+        await Assert.That(today.Day).IsEqualTo(15);
     }
 
     #endregion
@@ -394,6 +399,49 @@ internal class RocDateOnlyTests
         await Assert.That(result.Day).IsEqualTo(10);
     }
 
+    [Test]
+    public async Task Parse_CeDateFormat_ShouldThrowFormatException()
+    {
+        // Act & Assert - 西元日期格式應該解析失敗
+        await Assert.ThrowsAsync<FormatException>(async () =>
+        {
+            RocDateOnly.Parse("2026-01-01");
+            await Task.CompletedTask;
+        });
+    }
+
+    [Test]
+    public async Task Parse_CeDateFormatWithSlash_ShouldThrowFormatException()
+    {
+        // Act & Assert - 西元日期格式 (斜線分隔) 應該解析失敗
+        await Assert.ThrowsAsync<FormatException>(async () =>
+        {
+            RocDateOnly.Parse("2026/01/07");
+            await Task.CompletedTask;
+        });
+    }
+
+    [Test]
+    public async Task TryParse_CeDateFormat_ShouldReturnFalse()
+    {
+        // Act
+        var success = RocDateOnly.TryParse("2026-01-01", out _);
+
+        // Assert - 西元格式應該解析失敗
+        await Assert.That(success).IsFalse();
+    }
+
+    [Test]
+    public async Task Parse_CeDateFormatNoSeparator_ShouldThrowFormatException()
+    {
+        // Act & Assert - 8位數字格式 yyyyMMdd (西元年) 應該解析失敗
+        await Assert.ThrowsAsync<FormatException>(async () =>
+        {
+            RocDateOnly.Parse("20260101");
+            await Task.CompletedTask;
+        });
+    }
+
     #endregion
 
     #region ToString Tests
@@ -425,7 +473,7 @@ internal class RocDateOnlyTests
     }
 
     [Test]
-    public async Task ToString_WithCeYearFormat_ShouldReturnCeYear()
+    public async Task ToString_WithYyyyFormat_ShouldReturnFourDigitRocYear()
     {
         // Arrange
         var rocDate = new RocDateOnly(113, 5, 10);
@@ -433,8 +481,47 @@ internal class RocDateOnlyTests
         // Act
         var result = rocDate.ToString("yyyy/MM/dd");
 
-        // Assert - yyyy 格式輸出西元年
-        await Assert.That(result).IsEqualTo("2024/05/10");
+        // Assert - yyyy 格式輸出4位數民國年 (補零)
+        await Assert.That(result).IsEqualTo("0113/05/10");
+    }
+
+    [Test]
+    public async Task ToString_WithYyFormat_ShouldReturnTwoDigitRocYear()
+    {
+        // Arrange
+        var rocDate = new RocDateOnly(113, 5, 10);
+
+        // Act
+        var result = rocDate.ToString("yy/MM/dd");
+
+        // Assert - yy 格式輸出民國年後2位
+        await Assert.That(result).IsEqualTo("13/05/10");
+    }
+
+    [Test]
+    public async Task ToString_WithSingleYFormat_ShouldReturnSingleDigitRocYear()
+    {
+        // Arrange
+        var rocDate = new RocDateOnly(113, 5, 10);
+
+        // Act
+        var result = rocDate.ToString("y/MM/dd");
+
+        // Assert - y 格式輸出民國年個位數
+        await Assert.That(result).IsEqualTo("3/05/10");
+    }
+
+    [Test]
+    public async Task ToString_YearFormats_ShouldBeConsistent()
+    {
+        // Arrange - 民國 105 年
+        var rocDate = new RocDateOnly(105, 3, 15);
+
+        // Assert - yyyy => 0105, yyy => 105, yy => 05, y => 5
+        await Assert.That(rocDate.ToString("yyyy")).IsEqualTo("0105");
+        await Assert.That(rocDate.ToString("yyy")).IsEqualTo("105");
+        await Assert.That(rocDate.ToString("yy")).IsEqualTo("05");
+        await Assert.That(rocDate.ToString("y")).IsEqualTo("5");
     }
 
     #endregion

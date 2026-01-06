@@ -98,4 +98,36 @@ public static partial class RocExtensions
         public string ToString(string format = "yyy/MM/dd") =>
             rocDateOnly.HasValue ? rocDateOnly.Value.ToString(format) : string.Empty;
     }
+
+    /// <param name="timeProvider">時間提供者</param>
+    extension(TimeProvider timeProvider)
+    {
+        /// <summary>
+        /// 使用指定的 <see cref="TimeProvider"/> 取得目前的民國日期時間
+        /// </summary>
+        /// <returns>目前的民國日期時間</returns>
+        public RocDateTime GetRocNow() =>
+            new(timeProvider.GetLocalNow().DateTime);
+
+        /// <summary>
+        /// 使用指定的 <see cref="TimeProvider"/> 取得目前的民國日期時間 (UTC)
+        /// </summary>
+        /// <returns>目前的民國日期時間 (UTC)</returns>
+        public RocDateTime GetRocUtcNow() =>
+            new(timeProvider.GetUtcNow().UtcDateTime);
+
+        /// <summary>
+        /// 使用指定的 <see cref="TimeProvider"/> 取得今天的民國日期時間
+        /// </summary>
+        /// <returns>今天的民國日期時間</returns>
+        public RocDateTime GetRocToday() =>
+            new(timeProvider.GetLocalNow().Date);
+
+        /// <summary>
+        /// 使用指定的 <see cref="TimeProvider"/> 取得今天的民國日期
+        /// </summary>
+        /// <returns>今天的民國日期</returns>
+        public RocDateOnly GetRocDateOnlyToday() =>
+            new(DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime));
+    }
 }
