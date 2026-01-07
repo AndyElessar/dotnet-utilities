@@ -22,6 +22,15 @@ public readonly struct RocDateTime(DateTime ceVal) :
     ISpanParsable<RocDateTime>,
     IUtf8SpanFormattable
 {
+    private static readonly TaiwanCalendar s_calendar = new();
+    private static readonly CultureInfo s_rocCulture = CreateRocCulture();
+    private static CultureInfo CreateRocCulture()
+    {
+        var culture = new CultureInfo("zh-TW");
+        culture.DateTimeFormat.Calendar = s_calendar;
+        return culture;
+    }
+
     private readonly DateTime _ceVal = ceVal;
 
     #region Constructors
@@ -30,25 +39,25 @@ public readonly struct RocDateTime(DateTime ceVal) :
     /// 從民國年月日建立民國日期時間
     /// </summary>
     public RocDateTime(int year, int month, int day)
-        : this(new DateTime(year + RocExtensions.RocYearOffset, month, day)) { }
+        : this(s_calendar.ToDateTime(year, month, day, 0, 0, 0, 0)) { }
 
     /// <summary>
     /// 從民國年月日時分秒建立民國日期時間
     /// </summary>
     public RocDateTime(int year, int month, int day, int hour, int minute, int second)
-        : this(new DateTime(year + RocExtensions.RocYearOffset, month, day, hour, minute, second)) { }
+        : this(s_calendar.ToDateTime(year, month, day, hour, minute, second, 0)) { }
 
     /// <summary>
     /// 從民國年月日時分秒毫秒建立民國日期時間
     /// </summary>
     public RocDateTime(int year, int month, int day, int hour, int minute, int second, int millisecond)
-        : this(new DateTime(year + RocExtensions.RocYearOffset, month, day, hour, minute, second, millisecond)) { }
+        : this(s_calendar.ToDateTime(year, month, day, hour, minute, second, millisecond)) { }
 
     /// <summary>
     /// 從民國年月日時分秒毫秒微秒建立民國日期時間
     /// </summary>
     public RocDateTime(int year, int month, int day, int hour, int minute, int second, int millisecond, int microsecond)
-        : this(new DateTime(year + RocExtensions.RocYearOffset, month, day, hour, minute, second, millisecond, microsecond)) { }
+        : this(s_calendar.ToDateTime(year, month, day, hour, minute, second, millisecond).AddMicroseconds(microsecond)) { }
 
     /// <summary>
     /// 從 Ticks 建立民國日期時間
@@ -103,7 +112,7 @@ public readonly struct RocDateTime(DateTime ceVal) :
     /// <summary>
     /// 取得民國年
     /// </summary>
-    public int Year => _ceVal.Year - RocExtensions.RocYearOffset;
+    public int Year => s_calendar.GetYear(_ceVal);
 
     /// <summary>
     /// 取得月
@@ -356,9 +365,9 @@ public readonly struct RocDateTime(DateTime ceVal) :
         ArgumentNullException.ThrowIfNull(s);
         ArgumentNullException.ThrowIfNull(format);
 
-        var dt = DateTime.ParseExact(s, format, provider ?? CultureInfo.InvariantCulture);
-        // 假設解析出的年份是民國年，需要轉換為西元年
-        return new RocDateTime(dt.AddYears(RocExtensions.RocYearOffset));
+        // 使用 TaiwanCalendar 的 CultureInfo 直接解析民國年
+        var dt = DateTime.ParseExact(s, format, provider ?? s_rocCulture);
+        return new RocDateTime(dt);
     }
 
     /// <summary>
@@ -366,9 +375,10 @@ public readonly struct RocDateTime(DateTime ceVal) :
     /// </summary>
     public static bool TryParseExact(string? s, string? format, IFormatProvider? provider, DateTimeStyles style, out RocDateTime result)
     {
-        if(DateTime.TryParseExact(s, format, provider ?? CultureInfo.InvariantCulture, style, out var dt))
+        // 使用 TaiwanCalendar 的 CultureInfo 直接解析民國年
+        if(DateTime.TryParseExact(s, format, provider ?? s_rocCulture, style, out var dt))
         {
-            result = new RocDateTime(dt.AddYears(RocExtensions.RocYearOffset));
+            result = new RocDateTime(dt);
             return true;
         }
 
@@ -455,12 +465,109 @@ public readonly struct RocDateTime(DateTime ceVal) :
     ];
     private static RocDateTime? ParseInternal(string s)
     {
-        foreach(var format in s_formats)
+        // 嚴格民國格式解析：僅接受民國年格式，拒絕西元格式
+        var trimmed = s.Trim();
+
+        // 檢查是否為西元格式 (開頭 4 位數字後接分隔符)
+        // 例如: "2024/01/01" 或 "2024-01-01"
+        if(trimmed.Length >= 5 && char.IsDigit(trimmed[0]) && char.IsDigit(trimmed[1])
+            && char.IsDigit(trimmed[2]) && char.IsDigit(trimmed[3])
+            && (trimmed[4] == '/' || trimmed[4] == '-'))
         {
-            if(DateTime.TryParseExact(s, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+            return null;  // 拒絕 yyyy/ 或 yyyy- 格式
+        }
+
+        // 檢查是否為 8 位數字連續格式 (西元 yyyyMMdd)
+        // 排除 7 位數字 (民國 yyyMMdd) 和含時間的格式
+        if(trimmed.Length == 8)
+        {
+            bool allDigits = true;
+            foreach(var c in trimmed)
             {
-                return new RocDateTime(dt.AddYears(RocExtensions.RocYearOffset));
+                if(!char.IsDigit(c))
+                {
+                    allDigits = false;
+                    break;
+                }
             }
+            if(allDigits)
+                return null;  // 拒絕 yyyyMMdd 格式
+        }
+
+        // 特殊處理 7 位數字格式 (yyyMMdd) - TaiwanCalendar 可能無法直接解析
+        if(trimmed.Length == 7)
+        {
+            bool allDigits = true;
+            foreach(var c in trimmed)
+            {
+                if(!char.IsDigit(c))
+                {
+                    allDigits = false;
+                    break;
+                }
+            }
+            if(allDigits)
+            {
+                // 手動解析 yyyMMdd 格式
+                if(int.TryParse(trimmed.AsSpan(0, 3), out int rocYear)
+                    && int.TryParse(trimmed.AsSpan(3, 2), out int month)
+                    && int.TryParse(trimmed.AsSpan(5, 2), out int day)
+                    && month >= 1 && month <= 12 && day >= 1 && day <= 31)
+                {
+                    try
+                    {
+                        return new RocDateTime(rocYear, month, day);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+                return null;
+            }
+        }
+
+        // 特殊處理 13 位數字格式 (yyyMMddHHmmss) - TaiwanCalendar 可能無法直接解析
+        if(trimmed.Length == 13)
+        {
+            bool allDigits = true;
+            foreach(var c in trimmed)
+            {
+                if(!char.IsDigit(c))
+                {
+                    allDigits = false;
+                    break;
+                }
+            }
+            if(allDigits)
+            {
+                // 手動解析 yyyMMddHHmmss 格式
+                if(int.TryParse(trimmed.AsSpan(0, 3), out int rocYear)
+                    && int.TryParse(trimmed.AsSpan(3, 2), out int month)
+                    && int.TryParse(trimmed.AsSpan(5, 2), out int day)
+                    && int.TryParse(trimmed.AsSpan(7, 2), out int hour)
+                    && int.TryParse(trimmed.AsSpan(9, 2), out int minute)
+                    && int.TryParse(trimmed.AsSpan(11, 2), out int second)
+                    && month >= 1 && month <= 12 && day >= 1 && day <= 31
+                    && hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59 && second >= 0 && second <= 59)
+                {
+                    try
+                    {
+                        return new RocDateTime(rocYear, month, day, hour, minute, second);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+                return null;
+            }
+        }
+
+        // 使用 TaiwanCalendar 的 CultureInfo 解析民國日期
+        if(DateTime.TryParseExact(s, s_formats, s_rocCulture, DateTimeStyles.None, out var dt))
+        {
+            return new RocDateTime(dt);
         }
 
         return null;
@@ -473,12 +580,12 @@ public readonly struct RocDateTime(DateTime ceVal) :
     /// <summary>
     /// 判斷指定的民國年是否為閏年
     /// </summary>
-    public static bool IsLeapYear(int year) => DateTime.IsLeapYear(year + RocExtensions.RocYearOffset);
+    public static bool IsLeapYear(int year) => s_calendar.IsLeapYear(year);
 
     /// <summary>
     /// 取得指定民國年月的天數
     /// </summary>
-    public static int DaysInMonth(int year, int month) => DateTime.DaysInMonth(year + RocExtensions.RocYearOffset, month);
+    public static int DaysInMonth(int year, int month) => s_calendar.GetDaysInMonth(year, month);
 
     /// <summary>
     /// 指定種類建立新的民國日期時間
@@ -525,7 +632,7 @@ public readonly struct RocDateTime(DateTime ceVal) :
 
     private string FormatManually(string format)
     {
-        // 簡單的格式化處理
+        // 自訂格式化以支援特定的民國年格式
         // yyyy => 4位數民國年，補零 (例: 0113)
         // yyy => 3位數民國年，補零 (例: 113)
         // yy => 2位數，取後兩位 (例: 13)

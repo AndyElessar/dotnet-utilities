@@ -22,6 +22,7 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
     ISpanParsable<RocDateOnly>,
     IUtf8SpanFormattable
 {
+    private static readonly TaiwanCalendar s_calendar = new();
     private readonly DateOnly _ceVal = ceVal;
 
     #region Constructors
@@ -33,17 +34,7 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
     /// <param name="month">月份 (1-12)</param>
     /// <param name="day">日期 (1-31，依月份而定)</param>
     public RocDateOnly(int rocYear, int month, int day)
-        : this(new(rocYear + RocExtensions.RocYearOffset, month, day)) { }
-
-    /// <summary>
-    /// 使用民國年、月、日及指定的曆法建立民國日期
-    /// </summary>
-    /// <param name="rocYear">民國年</param>
-    /// <param name="month">月份</param>
-    /// <param name="day">日期</param>
-    /// <param name="calendar">曆法</param>
-    public RocDateOnly(int rocYear, int month, int day, Calendar calendar)
-        : this(new(rocYear + RocExtensions.RocYearOffset, month, day, calendar)) { }
+        : this(DateOnly.FromDateTime(s_calendar.ToDateTime(rocYear, month, day, 0, 0, 0, 0))) { }
 
     #endregion
 
@@ -52,7 +43,7 @@ public readonly struct RocDateOnly(DateOnly ceVal) :
     /// <summary>
     /// 取得民國年
     /// </summary>
-    public int Year => _ceVal.Year - RocExtensions.RocYearOffset;
+    public int Year => s_calendar.GetYear(_ceVal.ToDateTime(default));
 
     /// <summary>
     /// 取得西元年
