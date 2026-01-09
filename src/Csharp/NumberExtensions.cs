@@ -35,6 +35,11 @@ public static partial class UtilitiesExtensions
         /// <returns>The formatted string, or <see langword="null"/>.</returns>
         public string? ToString(string format) =>
             val.HasValue ? val.Value.ToString(format) : null;
+
+        /// <summary>
+        /// Gets a value indicating whether the value is an integer (has no fractional part).
+        /// </summary>
+        public bool IsInteger => val % 1 == 0;
     }
 
     extension(scoped in int? val)

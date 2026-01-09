@@ -56,6 +56,7 @@ public static partial class UtilitiesExtensions
         {
             if(source.Count > 1 && !source.IsFirst(dto))
             {
+                source.Resort();
                 var order = dto.SortOrder;
                 var prev = source.Where(r => r.SortOrder < order).MaxBy(static r => r.SortOrder)!;
                 var prevOrder = prev.SortOrder;
@@ -72,6 +73,7 @@ public static partial class UtilitiesExtensions
         {
             if(source.Count > 1 && !source.IsLast(dto))
             {
+                source.Resort();
                 var order = dto.SortOrder;
                 var next = source.Where(r => r.SortOrder > order).MinBy(static r => r.SortOrder)!;
                 var nextOrder = next.SortOrder;

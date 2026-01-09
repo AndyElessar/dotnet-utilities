@@ -159,6 +159,12 @@ public static partial class UtilitiesExtensions
                 return source[^count..];
         }
 
+        /// <inheritdoc cref="string.IsNullOrEmpty(string)" />
+        public bool IsNullOrEmpty => string.IsNullOrEmpty(source);
+        
+        /// <inheritdoc cref="string.IsNullOrWhiteSpace(string)" />
+        public bool IsNullOrWhiteSpace => string.IsNullOrWhiteSpace(source);
+
         /// <summary>
         /// Returns <paramref name="alternative"/> if the string is <see langword="null"/> or empty.
         /// </summary>
