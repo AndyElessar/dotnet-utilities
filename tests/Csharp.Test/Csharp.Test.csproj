@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Blazor\Blazor.csproj" />
     <ProjectReference Include="..\..\src\Csharp\Csharp.csproj" />
   </ItemGroup>
 

@@ -1,0 +1,40 @@
+@using Utilities.ROC
+
+<input type="date"
+       class="@Class"
+       value="@CurrentValueAsString"
+       disabled="@Disabled"
+       readonly="@ReadOnly"
+       @onchange="OnChangeAsync"
+       @attributes="AdditionalAttributes" />
+
+@code {
+    [Parameter]
+    public RocDateTime? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<RocDateTime?> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CurrentValueAsString => RocDateInputConverter.ToInputDateValue(Value);
+
+    private async Task OnChangeAsync(ChangeEventArgs args)
+    {
+        if(RocDateInputConverter.TryParseInputDateValue(args.Value?.ToString(), out var value))
+        {
+            Value = value;
+            await ValueChanged.InvokeAsync(value);
+        }
+    }
+}

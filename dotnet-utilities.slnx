@@ -7,6 +7,7 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Blazor/Blazor.csproj" />
     <Project Path="src/Csharp/Csharp.csproj" Id="ed9a20a7-7f89-43a9-b25b-05a38da22cd4" />
   </Folder>
   <Folder Name="/tests/">

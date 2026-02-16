@@ -1,0 +1,33 @@
+@using Utilities.ROC
+
+<div class="@Class">
+    <RocDatePicker Value="@Value"
+                   ValueChanged="@ValueChanged"
+                   Disabled="@Disabled"
+                   ReadOnly="@ReadOnly"
+                   @attributes="AdditionalAttributes" />
+    @if (Value.HasValue)
+    {
+        <div>@Value.Value.ToLongDateString()</div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public RocDateTime? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<RocDateTime?> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}
