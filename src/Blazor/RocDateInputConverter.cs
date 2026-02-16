@@ -9,13 +9,13 @@ public static class RocDateInputConverter
 
     public static bool TryParseInputDateValue(string? value, out RocDateTime? result)
     {
-        if(string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             result = null;
             return true;
         }
 
-        if(DateTime.TryParse(value, out var date))
+        if (DateTime.TryParse(value, out var date))
         {
             result = new RocDateTime(date.Date);
             return true;

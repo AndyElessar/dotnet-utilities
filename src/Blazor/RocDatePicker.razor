@@ -31,7 +31,7 @@
 
     private async Task OnChangeAsync(ChangeEventArgs args)
     {
-        if(RocDateInputConverter.TryParseInputDateValue(args.Value?.ToString(), out var value))
+        if (RocDateInputConverter.TryParseInputDateValue(args.Value?.ToString(), out var value))
         {
             Value = value;
             await ValueChanged.InvokeAsync(value);

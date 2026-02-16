@@ -21,7 +21,7 @@ public sealed class RocDatePickerJsInterop : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if(_moduleTask.IsValueCreated)
+        if (_moduleTask.IsValueCreated)
         {
             var module = await _moduleTask.Value;
             await module.DisposeAsync();
