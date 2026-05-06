@@ -8,7 +8,7 @@ public static partial class UtilitiesExtensions
         /// <summary>
         /// Newline separators (\r\n, \n).
         /// </summary>
-        public static string[] NewLineSeparators => ["\r\n", "\n"];
+        public static IReadOnlyList<string> NewLineSeparators => ["\r\n", "\n"];
 
         /// <summary>
         /// Removes all newline characters (string.NewLineSeparators).
@@ -20,7 +20,7 @@ public static partial class UtilitiesExtensions
                 return string.Empty;
 
             var seps = string.NewLineSeparators;
-            for(int i = 0; i < seps.Length; i++)
+            for(int i = 0; i < seps.Count; i++)
             {
                 source = source.Replace(seps[i], string.Empty);
             }
@@ -31,13 +31,10 @@ public static partial class UtilitiesExtensions
         /// Removes all space characters.
         /// </summary>
         /// <returns>The string with all spaces removed.</returns>
-        public string RemoveSpace()
-        {
-            if(string.IsNullOrWhiteSpace(source))
-                return string.Empty;
-
-            return source.Replace(" ", string.Empty);
-        }
+        public string RemoveSpace() =>
+            string.IsNullOrWhiteSpace(source)
+            ? string.Empty
+            : source.Replace(" ", string.Empty);
 
         /// <summary>
         /// Counts the number of occurrences of <paramref name="val"/> in <paramref name="source"/>.
@@ -148,20 +145,16 @@ public static partial class UtilitiesExtensions
         /// </summary>
         /// <param name="count">The number of characters to take.</param>
         /// <returns>The last characters, or the entire string if shorter than count.</returns>
-        public string TakeLast(int count)
-        {
-            if(source is null)
-                return string.Empty;
-
-            if(source.Length <= count)
-                return source;
-            else
-                return source[^count..];
-        }
+        public string TakeLast(int count) =>
+            source is null
+            ? string.Empty :
+            source.Length <= count
+            ? source
+            : source[^count..];
 
         /// <inheritdoc cref="string.IsNullOrEmpty(string)" />
         public bool IsNullOrEmpty => string.IsNullOrEmpty(source);
-        
+
         /// <inheritdoc cref="string.IsNullOrWhiteSpace(string)" />
         public bool IsNullOrWhiteSpace => string.IsNullOrWhiteSpace(source);
 
@@ -170,14 +163,32 @@ public static partial class UtilitiesExtensions
         /// </summary>
         /// <param name="alternative">The alternative string to return.</param>
         /// <returns>The original string, or the alternative if null or empty.</returns>
-        public string IsNullOrEmptyThen(string alternative) => string.IsNullOrEmpty(source) ? alternative : source;
+        public string IfNullOrEmptyThen(string alternative) => string.IsNullOrEmpty(source) ? alternative : source;
 
         /// <summary>
         /// Returns <paramref name="alternative"/> if the string is <see langword="null"/>, empty, or consists only of whitespace.
         /// </summary>
         /// <param name="alternative">The alternative string to return.</param>
         /// <returns>The original string, or the alternative if null, empty, or whitespace.</returns>
-        public string IsNullOrWhiteSpaceThen(string alternative) => string.IsNullOrWhiteSpace(source) ? alternative : source;
+        public string IfNullOrWhiteSpaceThen(string alternative) => string.IsNullOrWhiteSpace(source) ? alternative : source;
+
+        /// <summary>
+        /// Matches the string against null or empty, invoking <paramref name="some"/> if not null/empty, otherwise returning <paramref name="none"/>.
+        /// </summary>
+        /// <param name="some">The function to invoke if the string is not null or empty.</param>
+        /// <param name="none">The value to return if the string is null or empty.</param>
+        /// <returns></returns>
+        public string MatchNullOrEmpty(Func<string, string> some, string none = "") =>
+            string.IsNullOrEmpty(source) ? none : some(source);
+
+        /// <summary>
+        /// Matches the string against null, empty, or whitespace, invoking <paramref name="some"/> if not, otherwise returning <paramref name="none"/>.
+        /// </summary>
+        /// <param name="some">The function to invoke if the string is not null, empty, or whitespace.</param>
+        /// <param name="none">The value to return if the string is null, empty, or whitespace.</param>
+        /// <returns></returns>
+        public string MatchNullOrWhiteSpace(Func<string, string> some, string none = "") =>
+            string.IsNullOrWhiteSpace(source) ? none : some(source);
 
         /// <summary>
         /// Creates a string by repeating <paramref name="val"/> for <paramref name="count"/> times.

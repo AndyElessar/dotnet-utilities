@@ -8,6 +8,7 @@ Feel free to copy and use any code from this repository in your own projects!
 ### A bunch of C# Extensions
 
 Includes extensions for:
+
 - Collections
 - Strings
 - DateTime?, DateOnly? and TimeOnly?
@@ -16,6 +17,7 @@ Includes extensions for:
 - Task? and ValueTask?
 - Safe fire and forget for async methods
 - Control Flow
+- Duck Type
 
 ### ROC (Republic of China) Calendar Types
 
