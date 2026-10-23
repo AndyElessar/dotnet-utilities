@@ -1,0 +1,7 @@
+/* Base styles live in a cascade layer, so any unlayered application style (class, utility, ...) overrides them. */
+@layer rcl-anchor {
+    /* Shrink-wrap the anchor box around the content instead of spanning the whole line. */
+    * {
+        display: inline-block;
+    }
+}

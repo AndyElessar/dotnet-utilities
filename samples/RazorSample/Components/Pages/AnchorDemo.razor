@@ -1,0 +1,180 @@
+@page "/anchor"
+@rendermode InteractiveServer
+
+<PageTitle>Anchor</PageTitle>
+
+<div class="anchor-demo">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+        <FluentBadge>RAZOR CLASS LIBRARY</FluentBadge>
+        <FluentText As="TextTag.H1" Size="TextSize.Size900" Weight="TextWeight.Semibold">Anchor positioning</FluentText>
+        <FluentText As="TextTag.Paragraph" Size="TextSize.Size400">
+            <code>AnchorTarget</code> turns its content into a CSS anchor and <code>AnchorFollower</code> places content next to an
+            anchor. The browser keeps the follower attached while scrolling and moves it to a fallback position when it runs out
+            of space, without any JavaScript.
+        </FluentText>
+
+        <FluentMessageBar Class="anchor-warning" Intent="MessageBarIntent.Warning">
+            This browser does not fully support CSS anchor positioning: popovers are centered in the viewport instead.
+        </FluentMessageBar>
+        <FluentMessageBar Class="popover-warning" Intent="MessageBarIntent.Warning">
+            This browser does not support the Popover API, so the popups on this page cannot be opened.
+        </FluentMessageBar>
+    </FluentStack>
+
+    <FluentGrid Spacing="3" Margin="@Margin.Vertical6">
+        <FluentGridItem Xs="12" Sm="6" Lg="3">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="nested-title">
+                    <FluentText Id="nested-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Nested follower</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        A follower inside an <code>AnchorTarget</code> follows it without a name, e.g. a badge on a corner.
+                    </FluentText>
+                    <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalGap="24px">
+                        <AnchorTarget>
+                            <FluentAvatar Name="Andy Elessar" Initials="AE" Size="AvatarSize.Size48" Color="AvatarColor.Brand" />
+                            <AnchorFollower Area="PositionArea.TopRight" Fallbacks="[]" class="avatar-badge">
+                                <FluentBadge Color="BadgeColor.Danger" Shape="BadgeShape.Circular" Size="BadgeSize.Small">@_notifications</FluentBadge>
+                            </AnchorFollower>
+                        </AnchorTarget>
+                        <FluentButton OnClick="() => _notifications++">Notify</FluentButton>
+                    </FluentStack>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem Xs="12" Sm="6" Lg="3">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="menu-title">
+                    <FluentText Id="menu-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Any element as anchor</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        Give any element <code>anchor-name</code> and point <code>Anchor</code> at it. The list is at least as wide as the button.
+                    </FluentText>
+                    <button type="button" class="native-button" popovertarget="fruit-menu" style="anchor-name: @_menuAnchor">
+                        @(_fruit ?? "Choose a fruit")
+                    </button>
+                    <AnchorFollower id="fruit-menu" Anchor="_menuAnchor" Element="ul" PopoverMode="AnchorPopoverMode.Auto"
+                                    MatchAnchorWidth="true" Fallbacks="[PositionTryOption.FlipBlock]" class="surface menu">
+                        @foreach (var fruit in Fruits)
+                        {
+                            <li>
+                                <button type="button" class="menu-item" popovertarget="fruit-menu" popovertargetaction="hide"
+                                        @onclick="() => _fruit = fruit">
+                                    @fruit
+                                </button>
+                            </li>
+                        }
+                    </AnchorFollower>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem Xs="12" Sm="6" Lg="3">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="implicit-title">
+                    <FluentText Id="implicit-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Implicit anchor</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        Without <code>Anchor</code> or an enclosing target, a popover follows the button that opened it.
+                    </FluentText>
+                    <button type="button" class="native-button" popovertarget="info-popover">Show info</button>
+                    <AnchorFollower id="info-popover" PopoverMode="AnchorPopoverMode.Auto" Area="PositionArea.Right"
+                                    Fallbacks="[PositionTryOption.FlipInline, PositionTryOption.Area(PositionArea.Bottom)]" class="surface info">
+                        Placed next to the button that opened it.
+                    </AnchorFollower>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem Xs="12" Sm="6" Lg="3">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="clipped-title">
+                    <FluentText Id="clipped-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Hidden when clipped</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        The tag follows item 3 and hides while the item is scrolled out of the list.
+                    </FluentText>
+                    <div class="scroll-list" role="region" aria-label="Scrollable items" tabindex="0">
+                        @foreach (var item in Enumerable.Range(1, 12))
+                        {
+                            <div class="scroll-item">
+                                @if (item == 3)
+                                {
+                                    <AnchorTarget Name="_clippedItem" Element="span">Item @item</AnchorTarget>
+                                }
+                                else
+                                {
+                                    <span>Item @item</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <AnchorFollower Anchor="_clippedItem" Area="PositionArea.Right" Fallbacks="[]" class="item-tag">
+                        <FluentBadge Appearance="BadgeAppearance.Tint" Color="BadgeColor.Brand" Shape="BadgeShape.Rounded">Tagged</FluentBadge>
+                    </AnchorFollower>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+    <FluentCard Padding="@Padding.All5">
+        <section aria-labelledby="playground-title">
+            <FluentText Id="playground-title" As="TextTag.H2" Size="TextSize.Size500" Weight="TextWeight.Semibold">
+                Popup that finds its own space
+            </FluentText>
+            <FluentGrid Spacing="3" Margin="@Margin.Vertical4">
+                <FluentGridItem Xs="12" Sm="4">
+                    <FluentSelect TOption="AreaChoice" TValue="string" Width="100%"
+                                  Label="Area"
+                                  Items="@Areas"
+                                  @bind-Value="_area"
+                                  OptionText="@(choice => choice.Label)"
+                                  OptionValue="@(choice => choice.Area.Value)" />
+                </FluentGridItem>
+                <FluentGridItem Xs="12" Sm="4">
+                    <FluentSelect TOption="FallbacksChoice" TValue="string" Width="100%"
+                                  Label="Fallbacks"
+                                  Items="@FallbackChoices"
+                                  @bind-Value="_fallbacks"
+                                  OptionText="@(choice => choice.Label)"
+                                  OptionValue="@(choice => choice.Key)" />
+                </FluentGridItem>
+                <FluentGridItem Xs="12" Sm="4">
+                    <FluentSelect TOption="EnumChoice<PositionVisibility>" TValue="PositionVisibility" Width="100%"
+                                  Label="Visibility"
+                                  Items="@VisibilityChoices"
+                                  @bind-Value="_visibility"
+                                  OptionText="@(choice => choice.Label)"
+                                  OptionValue="@(choice => choice.Value)" />
+                </FluentGridItem>
+            </FluentGrid>
+            <FluentText As="TextTag.Paragraph">
+                Show the popup and scroll inside the box: near the bottom edge it flips above the button, near the right edge it
+                aligns with the button's right edge, and with <em>anchors-visible</em> it hides once the button scrolls out.
+                The browser keeps the last position that fit until it no longer does.
+            </FluentText>
+
+            @* The follower is absolutely positioned in the non-scrolling frame, so it flips against the visible box rather
+               than the viewport (a popover would live in the top layer and only react to the viewport edges). *@
+            <div class="playground">
+                <div class="playground-scroller" role="region" aria-label="Scrollable playground" tabindex="0">
+                    <div class="playground-stage">
+                        <AnchorTarget Name="Trigger" class="trigger-anchor">
+                            <FluentButton Appearance="ButtonAppearance.Primary" OnClick="() => _popupOpen = !_popupOpen">
+                                @(_popupOpen ? "Hide popup" : "Show popup")
+                            </FluentButton>
+                        </AnchorTarget>
+                    </div>
+                </div>
+                @if (_popupOpen)
+                {
+                    <AnchorFollower Element="section" Anchor="Trigger" Strategy="AnchorPositionStrategy.Absolute"
+                                    Area="SelectedArea.Area" Fallbacks="SelectedFallbacks.Fallbacks" Visibility="_visibility"
+                                    class="surface popup" style="@SelectedArea.Gap" aria-labelledby="popup-title">
+                        <FluentText Id="popup-title" As="TextTag.H3" Size="TextSize.Size400" Weight="TextWeight.Semibold">
+                            I find my own space
+                        </FluentText>
+                        <FluentText As="TextTag.Paragraph">Scroll the box to push me against its edges.</FluentText>
+                    </AnchorFollower>
+                }
+            </div>
+        </section>
+    </FluentCard>
+</div>

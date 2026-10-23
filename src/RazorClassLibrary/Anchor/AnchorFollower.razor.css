@@ -1,0 +1,37 @@
+/* Base styles live in a cascade layer, so any unlayered application style (class, utility, ...) overrides them. */
+@layer rcl-anchor {
+    /* Undo the popover UA styles (inset: 0; margin: auto) that would stretch or center the follower in its position-area. */
+    * {
+        inset: auto;
+        margin: 0;
+    }
+}
+
+/* Built-in fallbacks (PositionTryOption.TopWide / BottomWide): span the whole width above or below the anchor
+   and shrink to the available height. */
+@position-try --rcl-anchor-top-wide {
+    position-area: top span-all;
+    max-height: -webkit-fill-available;
+    max-height: stretch;
+}
+
+@position-try --rcl-anchor-bottom-wide {
+    position-area: bottom span-all;
+    max-height: -webkit-fill-available;
+    max-height: stretch;
+}
+
+/* Without anchor positioning, center popovers in the viewport and keep other followers at their document position
+   (a fixed element without insets would stay at its initial viewport position, possibly off-screen). */
+@supports not ((anchor-name: --rcl) and (position-area: bottom span-right) and (position-try-fallbacks: flip-block)) {
+    @layer rcl-anchor {
+        [popover] {
+            inset: 16px !important;
+            margin: auto !important;
+        }
+
+        :not([popover]) {
+            position: absolute !important;
+        }
+    }
+}

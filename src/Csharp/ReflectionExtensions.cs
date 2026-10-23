@@ -1,11 +1,14 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Utilities;
 
 public static partial class UtilitiesExtensions
 {
     /// <param name="obj">The object to search within.</param>
-    extension(object obj)
+    extension(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] object obj
+    )
     {
         /// <summary>
         /// Recursively finds objects of type <typeparamref name="TReturn"/>, where all parent and child objects must be of type <typeparamref name="TRestriction"/>.
@@ -101,6 +104,7 @@ public static partial class UtilitiesExtensions
         /// </summary>
         /// <typeparam name="TAttribute">The attribute type to search for.</typeparam>
         /// <returns>An enumerable of types that have the specified attribute.</returns>
+        [RequiresUnreferencedCode("This method uses reflection to get types with the specified attribute, which may not be preserved during trimming.")]
         public IEnumerable<Type> GetTypeWithAttribute<TAttribute>() where TAttribute : Attribute =>
             assembly.GetTypes().Where(t => t.GetCustomAttributes<TAttribute>().Any());
     }

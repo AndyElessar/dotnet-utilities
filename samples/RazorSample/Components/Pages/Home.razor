@@ -1,0 +1,45 @@
+@page "/"
+
+<PageTitle>Overview · dotnet-utilities</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="24px">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+        <FluentBadge>DOTNET UTILITIES · UI SAMPLE</FluentBadge>
+        <FluentText As="TextTag.H1" Size="TextSize.Size900" Weight="TextWeight.Semibold">
+            Thoughtful UI, built on the web platform.
+        </FluentText>
+        <FluentText As="TextTag.Paragraph" Size="TextSize.Size400">
+            A Fluent UI Blazor showcase for the anchor-positioning components in this library: controls and popovers that
+            adapt to the space around them.
+        </FluentText>
+        <FluentAnchorButton Href="anchor" Appearance="ButtonAppearance.Primary">Explore the anchor demo</FluentAnchorButton>
+    </FluentStack>
+
+    <FluentGrid Spacing="3">
+        <FluentGridItem Xs="12" Md="6">
+            <FluentCard Height="100%" Padding="@Padding.All5">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.PaintBrush())" />
+                    <FluentText As="TextTag.H2" Size="TextSize.Size500" Weight="TextWeight.Semibold">Fluent foundations</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        Fluent layout, navigation, buttons, badges, cards, and form controls shape the experience, with
+                        design tokens keeping colors and surfaces consistent.
+                    </FluentText>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem Xs="12" Md="6">
+            <FluentCard Height="100%" Padding="@Padding.All5">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+                    <FluentIcon Value="@(new Icons.Regular.Size32.Pin())" />
+                    <FluentText As="TextTag.H2" Size="TextSize.Size500" Weight="TextWeight.Semibold">CSS anchor positioning</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        <code>AnchorTarget</code> and <code>AnchorFollower</code> connect elements using native browser
+                        positioning, with popovers that respond to available space.
+                    </FluentText>
+                    <FluentAnchorButton Href="anchor" Appearance="ButtonAppearance.Subtle">View interactive examples</FluentAnchorButton>
+                </FluentStack>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+</FluentStack>

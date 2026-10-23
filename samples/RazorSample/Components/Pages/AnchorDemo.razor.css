@@ -1,0 +1,149 @@
+/* Roots rendered by Fluent / AnchorTarget / AnchorFollower don't get this page's scope attribute: target them with ::deep. */
+
+/* Each warning is shown only when the browser lacks the feature it describes. */
+@supports (anchor-name: --test) and (position-area: bottom span-right) and (position-try-fallbacks: flip-block) {
+    .anchor-demo ::deep .anchor-warning {
+        display: none;
+    }
+}
+
+@supports selector(:popover-open) {
+    .anchor-demo ::deep .popover-warning {
+        display: none;
+    }
+}
+
+.anchor-demo ::deep .avatar-badge {
+    translate: -50% 50%;
+}
+
+.anchor-demo ::deep .item-tag {
+    margin-inline: var(--spacingHorizontalS);
+}
+
+/* popovertarget only works on native <button>s, so these mirror FluentButton's default and primary looks. */
+.native-button {
+    min-width: 96px;
+    min-height: 32px;
+    padding: 5px var(--spacingHorizontalM);
+    border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    border-radius: var(--borderRadiusMedium);
+    color: var(--colorNeutralForeground1);
+    background: var(--colorNeutralBackground1);
+    font: var(--fontWeightSemibold) var(--fontSizeBase300) / var(--lineHeightBase300) var(--fontFamilyBase);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.native-button:hover {
+    border-color: var(--colorNeutralStroke1Hover);
+    background: var(--colorNeutralBackground1Hover);
+}
+
+.native-button:active {
+    border-color: var(--colorNeutralStroke1Pressed);
+    background: var(--colorNeutralBackground1Pressed);
+}
+
+:is(.native-button, .menu-item, .scroll-list, .playground-scroller):focus-visible {
+    outline: var(--strokeWidthThick) solid var(--colorStrokeFocus2);
+    outline-offset: 1px;
+}
+
+/* Fluent popover surface; popovers default to `color: CanvasText`, so the foreground is set explicitly. */
+.anchor-demo ::deep .surface {
+    padding: var(--spacingVerticalM) var(--spacingHorizontalM);
+    border: var(--strokeWidthThin) solid var(--colorTransparentStroke);
+    border-radius: var(--borderRadiusMedium);
+    color: var(--colorNeutralForeground1);
+    background: var(--colorNeutralBackground1);
+    box-shadow: var(--shadow16);
+}
+
+.anchor-demo ::deep .menu {
+    margin-block: var(--spacingVerticalXS);
+    padding: var(--spacingVerticalXS);
+    list-style: none;
+}
+
+.menu-item {
+    width: 100%;
+    min-height: 32px;
+    padding: var(--spacingVerticalSNudge) var(--spacingHorizontalSNudge);
+    border: 0;
+    border-radius: var(--borderRadiusMedium);
+    color: var(--colorNeutralForeground2);
+    background: transparent;
+    text-align: start;
+    font: inherit;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    color: var(--colorNeutralForeground2Hover);
+    background: var(--colorNeutralBackground1Hover);
+}
+
+.anchor-demo ::deep .info {
+    margin-inline: var(--spacingHorizontalS);
+}
+
+.anchor-demo ::deep .popup {
+    width: min(240px, 100%);
+    overflow: auto;
+}
+
+.anchor-demo ::deep .popup :is(h3, p) {
+    margin: 0 0 var(--spacingVerticalXS);
+}
+
+.scroll-list {
+    height: 120px;
+    overflow: auto;
+    border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    border-radius: var(--borderRadiusMedium);
+}
+
+.scroll-item {
+    padding: var(--spacingVerticalS) var(--spacingHorizontalM);
+}
+
+.scroll-item + .scroll-item {
+    border-top: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+}
+
+/* Non-scrolling frame: the absolutely positioned popup uses it as containing block, so its fallbacks react to the
+   visible edges of the box. `overflow: clip` (unlike hidden) does not turn the frame into a scroll container. */
+.playground {
+    position: relative;
+    height: 22rem;
+    overflow: clip;
+    border: var(--strokeWidthThin) dashed var(--colorNeutralStroke1);
+    border-radius: var(--borderRadiusLarge);
+    background: var(--colorNeutralBackground2);
+}
+
+.playground-scroller {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+}
+
+/* About twice the box, so scrolling can bring the centered button to every edge. */
+.playground-stage {
+    position: relative;
+    width: calc(200% - 6rem);
+    height: calc(200% - 6rem);
+    background: radial-gradient(var(--colorNeutralStroke2) 1px, transparent 1px) 0 0 / 1.25rem 1.25rem;
+}
+
+/* Starts scrolled to the centered button where scroll-initial-target is supported. */
+.playground-stage ::deep .trigger-anchor {
+    position: absolute;
+    inset: 0;
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+    scroll-initial-target: nearest;
+    scroll-snap-align: center;
+}
