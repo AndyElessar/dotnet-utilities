@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using RazorClassLibrary;
 
 namespace RazorClassLibrary.Anchor;
 
@@ -116,7 +117,7 @@ public partial class AnchorFollower : ComponentBase
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        AnchorCss.EnsureElementName(Element, nameof(AnchorFollower));
+        ComponentCss.EnsureElementName(Element, nameof(AnchorFollower));
         if (Area is null)
         {
             throw new InvalidOperationException($"{nameof(AnchorFollower)}.{nameof(Area)} cannot be null.");
@@ -148,7 +149,7 @@ public partial class AnchorFollower : ComponentBase
         }
 
         _popover = PopoverMode.ToAttributeValue();
-        _style = AnchorCss.MergeStyle(style.ToString(), AdditionalAttributes);
+        _style = ComponentCss.MergeStyle(style.ToString(), AdditionalAttributes);
     }
 
     private static void AppendFallbacks(StringBuilder style, IReadOnlyList<PositionTryOption> fallbacks)

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using RazorClassLibrary;
 
 namespace RazorClassLibrary.Anchor;
 
@@ -50,10 +51,10 @@ public partial class AnchorTarget : ComponentBase
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        AnchorCss.EnsureElementName(Element, nameof(AnchorTarget));
+        ComponentCss.EnsureElementName(Element, nameof(AnchorTarget));
 
         _name = Name ?? (_generatedName ??= AnchorName.New());
-        _style = AnchorCss.MergeStyle($"anchor-name: {_name.Value};", AdditionalAttributes);
+        _style = ComponentCss.MergeStyle($"anchor-name: {_name.Value};", AdditionalAttributes);
     }
 
     private void BuildElement(RenderTreeBuilder builder)

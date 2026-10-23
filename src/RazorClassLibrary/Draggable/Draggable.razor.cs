@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
+using RazorClassLibrary;
 using RazorClassLibrary.Anchor;
 
 namespace RazorClassLibrary.Draggable;
@@ -94,7 +95,7 @@ public partial class Draggable : ComponentBase, IAsyncDisposable
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        AnchorCss.EnsureElementName(Element, nameof(Draggable));
+        ComponentCss.EnsureElementName(Element, nameof(Draggable));
         if (!Enum.IsDefined(Bounds))
         {
             throw new InvalidOperationException($"{nameof(Draggable)}.{nameof(Bounds)} has an invalid value '{Bounds}'.");
@@ -225,7 +226,7 @@ public partial class Draggable : ComponentBase, IAsyncDisposable
         var translate = _offset == DragOffset.Zero
             ? string.Empty
             : string.Create(CultureInfo.InvariantCulture, $"translate: {_offset.X}px {_offset.Y}px;");
-        var style = AnchorCss.MergeStyle(translate, AdditionalAttributes);
+        var style = ComponentCss.MergeStyle(translate, AdditionalAttributes);
 
         builder.OpenElement(0, Element);
         builder.AddMultipleAttributes(1, AdditionalAttributes);

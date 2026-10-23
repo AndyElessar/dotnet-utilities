@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using RazorClassLibrary;
 using RazorClassLibrary.Anchor;
 
 namespace RazorClassLibrary.Draggable;
@@ -42,7 +43,7 @@ public partial class DraggableHandle : ComponentBase, IDisposable
     }
 
     /// <inheritdoc/>
-    protected override void OnParametersSet() => AnchorCss.EnsureElementName(Element, nameof(DraggableHandle));
+    protected override void OnParametersSet() => ComponentCss.EnsureElementName(Element, nameof(DraggableHandle));
 
     /// <inheritdoc/>
     public void Dispose()

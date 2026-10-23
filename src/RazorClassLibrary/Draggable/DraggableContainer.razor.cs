@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using RazorClassLibrary;
 using RazorClassLibrary.Anchor;
 
 namespace RazorClassLibrary.Draggable;
@@ -35,7 +36,7 @@ public partial class DraggableContainer : ComponentBase
     internal ElementReference ElementReference { get; private set; }
 
     /// <inheritdoc/>
-    protected override void OnParametersSet() => AnchorCss.EnsureElementName(Element, nameof(DraggableContainer));
+    protected override void OnParametersSet() => ComponentCss.EnsureElementName(Element, nameof(DraggableContainer));
 
     private void BuildElement(RenderTreeBuilder builder)
     {
