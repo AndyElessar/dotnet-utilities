@@ -1,0 +1,87 @@
+@page "/draggable"
+@rendermode InteractiveServer
+
+<PageTitle>Draggable</PageTitle>
+
+<div class="draggable-demo">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+        <FluentBadge>RAZOR CLASS LIBRARY</FluentBadge>
+        <FluentText As="TextTag.H1" Size="TextSize.Size900" Weight="TextWeight.Semibold">Draggable</FluentText>
+        <FluentText As="TextTag.Paragraph" Size="TextSize.Size400">
+            <code>Draggable</code> moves its content with the CSS <code>translate</code> property while it is dragged with a
+            mouse, touch or pen, so the layout around it does not shift. <code>Bounds</code> keeps it inside the enclosing
+            <code>DraggableContainer</code>, its parent or the viewport, also when that area is resized.
+        </FluentText>
+    </FluentStack>
+
+    <FluentGrid Spacing="3" Margin="@Margin.Vertical6">
+        <FluentGridItem Xs="12" Md="6">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="container-title">
+                    <FluentText Id="container-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Inside a container</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        Both cards stay inside the <code>DraggableContainer</code>. Resize it from its bottom-right corner:
+                        the cards are moved back inside. The button still works, and a drag does not click it.
+                    </FluentText>
+                    <DraggableContainer class="area resizable">
+                        <Draggable class="item" @bind-Offset="@_first">
+                            <strong>Drag me</strong>
+                            <span class="offset">@Format(_first)</span>
+                        </Draggable>
+                        <Draggable class="item accent" Offset="@(new DragOffset(180, 90))">
+                            <span>Clicks: @_clicks</span>
+                            <button type="button" class="native-button" @onclick="@(() => _clicks++)">Click</button>
+                        </Draggable>
+                    </DraggableContainer>
+                    <FluentButton Appearance="ButtonAppearance.Subtle" OnClick="@(() => _first = DragOffset.Zero)">Reset “Drag me”</FluentButton>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem Xs="12" Md="6">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="handle-title">
+                    <FluentText Id="handle-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Handle and parent bounds</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        Only the title bar (<code>DraggableHandle</code>) drags the window, so its text can be selected.
+                        <code>Bounds="DraggableBounds.Parent"</code> keeps it inside a plain <code>div</code>.
+                    </FluentText>
+                    <div class="area">
+                        <Draggable class="window" Bounds="DraggableBounds.Parent" Disabled="@_locked">
+                            <DraggableHandle class="title-bar">
+                                <span>Window</span>
+                                <span class="offset">@(_locked ? "locked" : "drag here")</span>
+                            </DraggableHandle>
+                            <p>This text can be selected. Dragging is only possible from the title bar.</p>
+                        </Draggable>
+                    </div>
+                    <FluentSwitch Label="Disabled" @bind-Value="@_locked" />
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem Xs="12">
+            <FluentCard Padding="@Padding.All4">
+                <section aria-labelledby="viewport-title">
+                    <FluentText Id="viewport-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Viewport and no bounds</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        <code>DraggableBounds.Viewport</code> can be dragged anywhere on screen but not out of it;
+                        <code>DraggableBounds.None</code> (or no container) is not bounded at all.
+                    </FluentText>
+                    <FluentStack HorizontalGap="12px" Wrap="true">
+                        <Draggable class="item" Bounds="DraggableBounds.Viewport">Viewport</Draggable>
+                        <Draggable class="item accent" Bounds="DraggableBounds.None">Unbounded</Draggable>
+                    </FluentStack>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+</div>
+
+@code {
+    private DragOffset _first = new(16, 16);
+    private int _clicks;
+    private bool _locked;
+
+    private static string Format(DragOffset offset) => $"({offset.X:0}, {offset.Y:0})";
+}

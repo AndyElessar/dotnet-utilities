@@ -1,0 +1,186 @@
+/*
+ * Fluent 2 dialog styles. Each value reads the Fluent 2 design token (as set by Fluent UI Blazor / Fluent UI web
+ * components) and falls back to the default light-theme value, so the dialog follows the app's theme when there is one.
+ */
+
+.dragable-dialog {
+    /* CSS handles centering and bounds; JavaScript only updates --x/--y during a drag. */
+    position: fixed;
+    inset: 0 auto auto 0;
+    margin: 0;
+    min-width: min(340px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    min-height: 80px;
+    max-height: calc(100dvh - 32px);
+    translate:
+        clamp(0px, var(--x, calc((100vw - 100%) / 2)), calc(100vw - 100%))
+        clamp(0px, var(--y, calc((100dvh - 100%) / 2)), calc(100dvh - 100%));
+    box-sizing: border-box;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    border: var(--strokeWidthThin, 1px) solid var(--colorTransparentStroke, transparent);
+    border-radius: var(--borderRadiusXLarge, 8px);
+    background: var(--colorNeutralBackground1, #ffffff);
+    color: var(--colorNeutralForeground1, #242424);
+    box-shadow: var(--shadow64, 0 0 8px rgba(0, 0, 0, 0.12), 0 32px 64px rgba(0, 0, 0, 0.14));
+    font-family: var(--fontFamilyBase, 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif);
+    font-size: var(--fontSizeBase300, 14px);
+    font-weight: var(--fontWeightRegular, 400);
+    line-height: var(--lineHeightBase300, 20px);
+    cursor: initial;
+}
+
+.dragable-dialog:popover-open {
+    display: flex;
+    animation: dialog-enter var(--durationGentle, 250ms) var(--curveDecelerateMid, cubic-bezier(0, 0, 0, 1));
+}
+
+@keyframes dialog-enter {
+    from {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dragable-dialog:popover-open {
+        animation: none;
+    }
+}
+
+.header {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+}
+
+/* The drag handle; the close button is a sibling so pressing it does not start a drag. */
+.header-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: var(--spacingVerticalXXL, 24px) 0 var(--spacingVerticalS, 8px) var(--spacingHorizontalXXL, 24px);
+    cursor: move;
+    user-select: none;
+    touch-action: none;
+}
+
+.title {
+    margin: 0;
+    font-size: var(--fontSizeBase500, 20px);
+    font-weight: var(--fontWeightSemibold, 600);
+    line-height: var(--lineHeightBase500, 28px);
+}
+
+.close-button {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 22px var(--spacingHorizontalXXL, 24px) 0 var(--spacingHorizontalS, 8px);
+    padding: 0;
+    border: var(--strokeWidthThin, 1px) solid transparent;
+    border-radius: var(--borderRadiusMedium, 4px);
+    background: var(--colorSubtleBackground, transparent);
+    color: var(--colorNeutralForeground2, #424242);
+    cursor: pointer;
+}
+
+.close-button:hover {
+    background: var(--colorSubtleBackgroundHover, #f5f5f5);
+    color: var(--colorNeutralForeground2Hover, #242424);
+}
+
+.close-button:active {
+    background: var(--colorSubtleBackgroundPressed, #e0e0e0);
+    color: var(--colorNeutralForeground2Pressed, #242424);
+}
+
+.body {
+    flex: 1 1 auto;
+    min-height: 0;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 var(--spacingHorizontalXXL, 24px);
+    overflow-y: auto;
+}
+
+.footer {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacingHorizontalS, 8px);
+    margin-top: auto;
+    padding: var(--spacingVerticalXXL, 24px);
+}
+
+.dialog-button {
+    min-width: 96px;
+    min-height: 32px;
+    box-sizing: border-box;
+    padding: 5px var(--spacingHorizontalM, 12px);
+    border: var(--strokeWidthThin, 1px) solid var(--colorNeutralStroke1, #d1d1d1);
+    border-radius: var(--borderRadiusMedium, 4px);
+    background: var(--colorNeutralBackground1, #ffffff);
+    color: var(--colorNeutralForeground1, #242424);
+    font-family: inherit;
+    font-size: var(--fontSizeBase300, 14px);
+    font-weight: var(--fontWeightSemibold, 600);
+    line-height: var(--lineHeightBase300, 20px);
+    white-space: nowrap;
+    cursor: pointer;
+    transition-property: background, border, color;
+    transition-duration: var(--durationFaster, 100ms);
+    transition-timing-function: var(--curveEasyEase, cubic-bezier(0.33, 0, 0.67, 1));
+}
+
+.dialog-button:hover {
+    border-color: var(--colorNeutralStroke1Hover, #c7c7c7);
+    background: var(--colorNeutralBackground1Hover, #f5f5f5);
+}
+
+.dialog-button:active {
+    border-color: var(--colorNeutralStroke1Pressed, #b3b3b3);
+    background: var(--colorNeutralBackground1Pressed, #e0e0e0);
+}
+
+.dialog-button.primary {
+    border-color: transparent;
+    background: var(--colorBrandBackground, #0f6cbd);
+    color: var(--colorNeutralForegroundOnBrand, #ffffff);
+}
+
+.dialog-button.primary:hover {
+    background: var(--colorBrandBackgroundHover, #115ea3);
+}
+
+.dialog-button.primary:active {
+    background: var(--colorBrandBackgroundPressed, #0c3b5e);
+}
+
+.close-button:focus-visible,
+.dialog-button:focus-visible {
+    outline: var(--strokeWidthThick, 2px) solid var(--colorStrokeFocus2, #000000);
+    outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog-button {
+        transition: none;
+    }
+}
+
+@media (forced-colors: active) {
+    .dragable-dialog {
+        border-color: CanvasText;
+    }
+
+    .dialog-button,
+    .close-button {
+        border-color: ButtonText;
+        forced-color-adjust: auto;
+    }
+}

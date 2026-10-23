@@ -1,0 +1,18 @@
+.log {
+    margin: 0;
+    padding: var(--spacingVerticalS) var(--spacingHorizontalM) var(--spacingVerticalS) var(--spacingHorizontalXXL);
+    border-radius: var(--borderRadiusMedium);
+    background: var(--colorNeutralBackground3);
+    font-family: var(--fontFamilyMonospace);
+    font-size: var(--fontSizeBase200);
+    line-height: var(--lineHeightBase300);
+}
+
+.changes {
+    margin: 0;
+    padding-inline-start: var(--spacingHorizontalXL);
+}
+
+.changes li + li {
+    margin-top: var(--spacingVerticalXS);
+}

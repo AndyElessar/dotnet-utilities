@@ -1,0 +1,131 @@
+@page "/dialog"
+@rendermode InteractiveServer
+
+<PageTitle>Draggable dialog</PageTitle>
+
+<div class="dialog-demo">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+        <FluentBadge>RAZOR CLASS LIBRARY</FluentBadge>
+        <FluentText As="TextTag.H1" Size="TextSize.Size900" Weight="TextWeight.Semibold">Draggable dialog</FluentText>
+        <FluentText As="TextTag.Paragraph" Size="TextSize.Size400">
+            <code>DraggableDialog</code> is a non-modal native <code>&lt;dialog&gt;</code> in the Fluent 2 style. Drag it by its
+            header: it stays inside the viewport and is centered again every time it opens. The rest of the page stays
+            usable while it is open.
+        </FluentText>
+    </FluentStack>
+
+    <FluentGrid Spacing="3" Margin="@Margin.Vertical6">
+        <FluentGridItem Xs="12" Md="4">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="basic-title">
+                    <FluentText Id="basic-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Basic</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        A <code>Title</code>, body content and the default confirm and cancel buttons.
+                    </FluentText>
+                    <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@(() => _basic!.OpenAsync())">Open dialog</FluentButton>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem Xs="12" Md="4">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="guards-title">
+                    <FluentText Id="guards-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Guards</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        <code>OnConfirming</code> keeps the dialog open until the name is valid; <code>OnCanceling</code> blocks
+                        closing while there are unsaved changes.
+                    </FluentText>
+                    <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalGap="12px" Wrap="true">
+                        <FluentButton OnClick="@(() => _guarded!.OpenAsync())">Rename project</FluentButton>
+                        <FluentText>Project: <strong>@_projectName</strong></FluentText>
+                    </FluentStack>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+
+        <FluentGridItem Xs="12" Md="4">
+            <FluentCard Height="100%" Padding="@Padding.All4">
+                <section aria-labelledby="custom-title">
+                    <FluentText Id="custom-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Custom header and footer</FluentText>
+                    <FluentText As="TextTag.Paragraph">
+                        <code>HeaderContent</code> and <code>FooterContent</code> replace the title and the buttons; the
+                        footer calls <code>ConfirmAsync</code> and <code>CancelAsync</code> itself.
+                    </FluentText>
+                    <FluentButton OnClick="@(() => _custom!.OpenAsync())">Show details</FluentButton>
+                </section>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+    <section aria-labelledby="log-title">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center">
+            <FluentText Id="log-title" As="TextTag.H2" Size="TextSize.Size500" Weight="TextWeight.Semibold">Event log</FluentText>
+            <FluentSpacer />
+            <FluentButton Appearance="ButtonAppearance.Subtle" Disabled="@(_log.Count == 0)" OnClick="@_log.Clear">Clear</FluentButton>
+        </FluentStack>
+        @if (_log.Count == 0)
+        {
+            <FluentText As="TextTag.Paragraph">Open a dialog to see its callbacks here.</FluentText>
+        }
+        else
+        {
+            <ol class="log" aria-live="polite">
+                @foreach (var entry in _log)
+                {
+                    <li>@entry</li>
+                }
+            </ol>
+        }
+    </section>
+</div>
+
+<DraggableDialog @ref="_basic" Title="Welcome"
+                 OnOpen="@(() => Log("Basic: OnOpen"))"
+                 OnConfirm="@(() => Log("Basic: OnConfirm"))"
+                 OnCancel="@(() => Log("Basic: OnCancel"))">
+    <p>
+        Drag this dialog by its header. Press <strong>Confirm</strong>, <strong>Cancel</strong> or the close button to
+        close it.
+    </p>
+</DraggableDialog>
+
+<DraggableDialog @ref="_guarded" Title="Rename project" Width="480px" ConfirmText="Save"
+                 OnOpening="@OnRenameOpeningAsync"
+                 OnConfirming="@OnRenameConfirmingAsync" OnConfirm="@OnRenameConfirm"
+                 OnCanceling="@OnRenameCancelingAsync" OnCancel="@(() => Log("Guards: OnCancel"))">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+        <FluentTextInput Label="Project name" Required="true" Immediate="true" Style="width: 100%;"
+                         @bind-Value="@_draftName"
+                         Message="@_nameError" MessageCondition="@(_ => _nameError is not null)"
+                         MessageIcon="@(new Icons.Filled.Size16.ErrorCircle().WithColor(Color.Error))" />
+        <FluentCheckbox Label="I have unsaved changes (blocks Cancel)" @bind-Value="@_hasUnsavedChanges" />
+    </FluentStack>
+</DraggableDialog>
+
+<DraggableDialog @ref="_custom" Width="420px"
+                 OnConfirm="@(() => Log("Custom: OnConfirm (Got it)"))"
+                 OnCancel="@(() => Log("Custom: OnCancel"))">
+    <HeaderContent>
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalGap="12px">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Info())" Color="Color.Primary" />
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="0">
+                <FluentText As="TextTag.H2" Size="TextSize.Size500" Weight="TextWeight.Semibold">Release 1.2.0</FluentText>
+                <FluentText Size="TextSize.Size200">Published today</FluentText>
+            </FluentStack>
+        </FluentStack>
+    </HeaderContent>
+    <ChildContent>
+        <ul class="changes">
+            <li>Dragging is handled by a collocated JavaScript module.</li>
+            <li>The dialog is native HTML and CSS styled with Fluent 2 tokens.</li>
+            <li>It follows the Fluent theme of the app when one is present.</li>
+        </ul>
+    </ChildContent>
+    <FooterContent>
+        <FluentAnchorButton Href="https://github.com/AndyElessar/dotnet-utilities" Target="LinkTarget.Blank" Appearance="ButtonAppearance.Subtle">
+            View on GitHub
+        </FluentAnchorButton>
+        <FluentSpacer />
+        <FluentButton Appearance="ButtonAppearance.Primary" OnClick="@(() => _custom!.ConfirmAsync())">Got it</FluentButton>
+    </FooterContent>
+</DraggableDialog>

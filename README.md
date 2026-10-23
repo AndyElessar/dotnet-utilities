@@ -72,3 +72,64 @@ Components in `RazorClassLibrary.Anchor` that attach one element to another with
 - Use `PopoverMode` (or a plain `popover` attribute) to render the follower in the top layer, so it is not clipped by `overflow` or covered by `z-index`.
 - The base styles are in the `rcl-anchor` cascade layer, so application styles override them. Browsers without anchor positioning show popovers in the middle of the viewport.
 - See `samples/RazorSample` for a Microsoft Fluent UI Blazor sample app, including an interactive `/anchor` demo.
+
+### Draggable Components (Blazor)
+
+Components in `RazorClassLibrary.Draggable` that let the user move content with a mouse, touch or pen
+(interactive render modes only):
+
+- **Draggable** - Moves its content with the CSS `translate` property, so the surrounding layout does not shift; `@bind-Offset` gets or sets the position
+- **DraggableContainer** - Keeps the draggables inside it within its padding box
+- **DraggableHandle** - Restricts dragging to a part of the draggable, e.g. a title bar
+
+```razor
+<DraggableContainer style="position: relative; height: 300px">
+    <Draggable @bind-Offset="_offset">Drag me anywhere in the container</Draggable>
+
+    <Draggable Bounds="DraggableBounds.Parent">
+        <DraggableHandle>Title bar</DraggableHandle>
+        <p>Only the title bar drags this one.</p>
+    </Draggable>
+</DraggableContainer>
+
+@code {
+    private DragOffset _offset;
+}
+```
+
+- `Bounds` is `Container` (the enclosing `DraggableContainer`; unbounded without one), `Parent`, `Viewport` or `None`. When the bounds are resized, the draggable is moved back inside.
+- Form controls, buttons and links inside a draggable keep working, and a drag does not click the element.
+- `Disabled` stops dragging; the base styles (`cursor`, `touch-action`) are in the `rcl-draggable` cascade layer.
+- See the `/draggable` demo in `samples/RazorSample`.
+
+### DraggableDialog (Blazor)
+
+`RazorClassLibrary.Dialog.DraggableDialog` is a non-modal native dialog styled with Fluent 2 tokens. It opens in the
+browser's top layer, so it is not clipped or covered by ancestor stacking contexts, and the rest of the page remains
+interactive. The dialog opens centered in the viewport and can be moved by dragging its header.
+
+```razor
+<button @onclick="() => _dialog!.OpenAsync()">Open dialog</button>
+
+<DraggableDialog @ref="_dialog" Title="Confirm changes"
+                 OnConfirm="@SaveAsync">
+    <p>Do you want to save these changes?</p>
+</DraggableDialog>
+
+@code {
+    private DraggableDialog? _dialog;
+
+    private Task SaveAsync()
+    {
+        // Save changes.
+        return Task.CompletedTask;
+    }
+}
+```
+
+- `OpenAsync` opens the dialog; the default confirm and cancel buttons call `ConfirmAsync` and `CancelAsync`.
+- `OnOpening`, `OnConfirming` and `OnCanceling` are optional guards. Return `false` to prevent the corresponding open or close action.
+- `OnOpen`, `OnConfirm` and `OnCancel` run after their corresponding action succeeds.
+- `HeaderContent` replaces `Title`, and `FooterContent` replaces the default buttons. Custom footer buttons can call `ConfirmAsync` or `CancelAsync`.
+- `ChildContent` provides the dialog body; `Width`, `Class` and `Style` customize its appearance.
+- Requires an interactive render mode. See the `/dialog` demo in `samples/RazorSample`.

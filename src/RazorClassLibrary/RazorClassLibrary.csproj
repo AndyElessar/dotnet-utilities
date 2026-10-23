@@ -12,9 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The anchor components build their element by hand (dynamic element name) and add these scope attributes in code. -->
+    <!-- These components build their element by hand (dynamic element name) and add these scope attributes in code. -->
     <None Update="Anchor\AnchorTarget.razor.css" CssScope="rcl-anchor-target" />
     <None Update="Anchor\AnchorFollower.razor.css" CssScope="rcl-anchor-follower" />
+    <None Update="Draggable\Draggable.razor.css" CssScope="rcl-draggable" />
   </ItemGroup>
 
 </Project>

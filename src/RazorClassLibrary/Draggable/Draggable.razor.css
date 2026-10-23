@@ -1,0 +1,19 @@
+/* Base styles live in a cascade layer, so any unlayered application style (class, utility, ...) overrides them.
+   Handles are styled from here with ::deep, so a disabled draggable can reset them. */
+@layer rcl-draggable {
+    /* touch-action: none keeps touch input from scrolling the page instead of dragging. */
+    :not([data-handles], [data-disabled]),
+    :not([data-disabled]) ::deep [data-draggable-handle] {
+        cursor: grab;
+        touch-action: none;
+    }
+
+    [data-dragging],
+    [data-dragging] ::deep * {
+        cursor: grabbing;
+    }
+
+    [data-dragging] {
+        user-select: none;
+    }
+}

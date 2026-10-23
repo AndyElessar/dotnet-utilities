@@ -1,0 +1,75 @@
+/* The draggables render their own elements, so their classes are styled through ::deep. */
+.draggable-demo ::deep .area {
+    position: relative;
+    height: 240px;
+    margin-block: var(--spacingVerticalM);
+    border: var(--strokeWidthThin) dashed var(--colorNeutralStroke1);
+    border-radius: var(--borderRadiusMedium);
+    background: var(--colorNeutralBackground3);
+    overflow: hidden;
+}
+
+.draggable-demo ::deep .resizable {
+    resize: both;
+    min-width: 160px;
+    min-height: 120px;
+    max-width: 100%;
+}
+
+.draggable-demo ::deep .item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacingHorizontalS);
+    padding: var(--spacingVerticalS) var(--spacingHorizontalM);
+    border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    border-radius: var(--borderRadiusMedium);
+    background: var(--colorNeutralBackground1);
+    box-shadow: var(--shadow4);
+    color: var(--colorNeutralForeground1);
+}
+
+.draggable-demo ::deep .area .item {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.draggable-demo ::deep .item.accent {
+    border-color: var(--colorBrandStroke1);
+    background: var(--colorBrandBackground2);
+}
+
+.draggable-demo ::deep [data-dragging] {
+    box-shadow: var(--shadow16);
+}
+
+.draggable-demo ::deep .offset {
+    color: var(--colorNeutralForeground3);
+    font-family: var(--fontFamilyMonospace);
+    font-size: var(--fontSizeBase200);
+}
+
+.draggable-demo ::deep .window {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    width: 240px;
+    border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    border-radius: var(--borderRadiusLarge);
+    background: var(--colorNeutralBackground1);
+    box-shadow: var(--shadow8);
+    overflow: hidden;
+}
+
+.draggable-demo ::deep .window p {
+    margin: 0;
+    padding: var(--spacingVerticalM) var(--spacingHorizontalM);
+}
+
+.draggable-demo ::deep .title-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacingVerticalS) var(--spacingHorizontalM);
+    background: var(--colorNeutralBackground3);
+    font-weight: var(--fontWeightSemibold);
+}
