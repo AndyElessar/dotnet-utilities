@@ -1,0 +1,82 @@
+@page "/roc-date"
+@using System.Globalization
+@rendermode InteractiveServer
+
+<PageTitle>ROC Date</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+    <FluentBadge>FLUENT UI BLAZOR</FluentBadge>
+    <FluentText As="TextTag.H1" Size="TextSize.Size900" Weight="TextWeight.Semibold">ROC date picker</FluentText>
+    <FluentText As="TextTag.Paragraph" Size="TextSize.Size400">
+        A <code>FluentDatePicker</code> that shows ROC (民國) years in both the text input and the popup calendar,
+        while still binding to a regular <code>DateTime</code>.
+    </FluentText>
+</FluentStack>
+
+<FluentGrid Spacing="3" Margin="@Margin.Vertical6">
+    <FluentGridItem Xs="12" Md="5">
+        <FluentCard Height="100%" Padding="@Padding.All4">
+            <section aria-labelledby="picker-title">
+                <FluentText Id="picker-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Date picker</FluentText>
+                <FluentDatePicker @bind-Value="selectedDate" Culture="@rocCulture" Placeholder="@placeHolder" />
+                <FluentText As="TextTag.Paragraph">
+                    Bound value: <code>@(selectedDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "null")</code>
+                </FluentText>
+            </section>
+        </FluentCard>
+    </FluentGridItem>
+
+    <FluentGridItem Xs="12" Md="7">
+        <FluentCard Height="100%" Padding="@Padding.All4">
+            <section aria-labelledby="calendars-title">
+                <FluentText Id="calendars-title" As="TextTag.H2" Size="TextSize.Size400" Weight="TextWeight.Semibold">Why two calendars?</FluentText>
+                <FluentText As="TextTag.Paragraph">
+                    A <code>CultureInfo</code> exposes two calendars, and the date picker reads both:
+                </FluentText>
+                <ul>
+                    <li>
+                        <code>CultureInfo.Calendar</code> is the culture's <em>default</em> calendar. It is read-only;
+                        for <code>zh-TW</code> it is always <code>GregorianCalendar</code>. The popup <code>FluentCalendar</code>
+                        computes years, months and days with it.
+                    </li>
+                    <li>
+                        <code>CultureInfo.DateTimeFormat.Calendar</code> is the calendar <em>currently used</em> for formatting and
+                        parsing, and can be set to any of the culture's <code>OptionalCalendars</code>. The text input
+                        (<code>ToString</code> / <code>Parse</code>) uses it.
+                    </li>
+                </ul>
+                <FluentText As="TextTag.Paragraph">
+                    Setting only <code>DateTimeFormat.Calendar = new TaiwanCalendar()</code> therefore shows ROC years in the
+                    input but Gregorian years in the calendar. The fix is a <code>CultureInfo</code> subclass that overrides
+                    <code>Calendar</code> with the same <code>TaiwanCalendar</code> instance.
+                </FluentText>
+            </section>
+        </FluentCard>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private DateTime? selectedDate;
+    private readonly CultureInfo rocCulture = new RocCultureInfo();
+    private string? placeHolder;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        placeHolder = DateTime.Now.ToString("yyy/MM/dd", rocCulture);
+    }
+
+    private sealed class RocCultureInfo : CultureInfo
+    {
+        private readonly TaiwanCalendar calendar = new();
+
+        public RocCultureInfo() : base("zh-TW")
+        {
+            DateTimeFormat.Calendar = calendar;
+        }
+
+        // FluentCalendar uses CultureInfo.Calendar, not just DateTimeFormat.Calendar.
+        public override Calendar Calendar => calendar;
+    }
+}

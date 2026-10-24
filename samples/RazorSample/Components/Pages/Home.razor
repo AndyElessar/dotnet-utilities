@@ -9,37 +9,73 @@
             Thoughtful UI, built on the web platform.
         </FluentText>
         <FluentText As="TextTag.Paragraph" Size="TextSize.Size400">
-            A Fluent UI Blazor showcase for the anchor-positioning components in this library: controls and popovers that
-            adapt to the space around them.
+            A Fluent UI Blazor showcase for the components in this repository's Razor class library and C# utilities:
+            anchor-positioned popovers, draggable content and dialogs, and ROC calendar dates. Every page works in both
+            light and dark mode.
         </FluentText>
-        <FluentAnchorButton Href="anchor" Appearance="ButtonAppearance.Primary">Explore the anchor demo</FluentAnchorButton>
     </FluentStack>
 
-    <FluentGrid Spacing="3">
-        <FluentGridItem Xs="12" Md="6">
-            <FluentCard Height="100%" Padding="@Padding.All5">
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
-                    <FluentIcon Value="@(new Icons.Regular.Size32.PaintBrush())" />
-                    <FluentText As="TextTag.H2" Size="TextSize.Size500" Weight="TextWeight.Semibold">Fluent foundations</FluentText>
-                    <FluentText As="TextTag.Paragraph">
-                        Fluent layout, navigation, buttons, badges, cards, and form controls shape the experience, with
-                        design tokens keeping colors and surfaces consistent.
-                    </FluentText>
-                </FluentStack>
-            </FluentCard>
-        </FluentGridItem>
-        <FluentGridItem Xs="12" Md="6">
-            <FluentCard Height="100%" Padding="@Padding.All5">
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
-                    <FluentIcon Value="@(new Icons.Regular.Size32.Pin())" />
-                    <FluentText As="TextTag.H2" Size="TextSize.Size500" Weight="TextWeight.Semibold">CSS anchor positioning</FluentText>
-                    <FluentText As="TextTag.Paragraph">
-                        <code>AnchorTarget</code> and <code>AnchorFollower</code> connect elements using native browser
-                        positioning, with popovers that respond to available space.
-                    </FluentText>
-                    <FluentAnchorButton Href="anchor" Appearance="ButtonAppearance.Subtle">View interactive examples</FluentAnchorButton>
-                </FluentStack>
-            </FluentCard>
-        </FluentGridItem>
-    </FluentGrid>
+    <section aria-labelledby="pages-title">
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+            <FluentText Id="pages-title" As="TextTag.H2" Size="TextSize.Size600" Weight="TextWeight.Semibold">Sample pages</FluentText>
+            <FluentGrid Spacing="3">
+                <FluentGridItem Xs="12" Md="6">
+                    <FluentCard Height="100%" Padding="@Padding.All5">
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+                            <FluentIcon Value="@(new Icons.Regular.Size32.Pin())" />
+                            <FluentText As="TextTag.H3" Size="TextSize.Size500" Weight="TextWeight.Semibold">CSS anchor positioning</FluentText>
+                            <FluentText As="TextTag.Paragraph">
+                                <code>AnchorTarget</code> and <code>AnchorFollower</code> attach content to an anchor with native
+                                CSS anchor positioning: nested badges, named anchors, popovers, and followers that flip to a
+                                fallback position when they run out of space.
+                            </FluentText>
+                            <FluentAnchorButton Href="anchor" Appearance="ButtonAppearance.Subtle">Open anchor positioning</FluentAnchorButton>
+                        </FluentStack>
+                    </FluentCard>
+                </FluentGridItem>
+                <FluentGridItem Xs="12" Md="6">
+                    <FluentCard Height="100%" Padding="@Padding.All5">
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+                            <FluentIcon Value="@(new Icons.Regular.Size32.WindowNew())" />
+                            <FluentText As="TextTag.H3" Size="TextSize.Size500" Weight="TextWeight.Semibold">Draggable dialog</FluentText>
+                            <FluentText As="TextTag.Paragraph">
+                                <code>DraggableDialog</code> is a non-modal native <code>&lt;dialog&gt;</code> in the Fluent 2 style.
+                                Drag it by its header, keep it inside the viewport, and guard closing with
+                                <code>OnConfirming</code> and <code>OnCanceling</code>.
+                            </FluentText>
+                            <FluentAnchorButton Href="dialog" Appearance="ButtonAppearance.Subtle">Open draggable dialog</FluentAnchorButton>
+                        </FluentStack>
+                    </FluentCard>
+                </FluentGridItem>
+                <FluentGridItem Xs="12" Md="6">
+                    <FluentCard Height="100%" Padding="@Padding.All5">
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+                            <FluentIcon Value="@(new Icons.Regular.Size24.ArrowMove())" Width="32px" />
+                            <FluentText As="TextTag.H3" Size="TextSize.Size500" Weight="TextWeight.Semibold">Draggable</FluentText>
+                            <FluentText As="TextTag.Paragraph">
+                                <code>Draggable</code> moves content with mouse, touch, or pen using the CSS <code>translate</code>
+                                property, so the surrounding layout never shifts. <code>Bounds</code> keeps it inside a
+                                <code>DraggableContainer</code>, its parent, or the viewport.
+                            </FluentText>
+                            <FluentAnchorButton Href="draggable" Appearance="ButtonAppearance.Subtle">Open draggable</FluentAnchorButton>
+                        </FluentStack>
+                    </FluentCard>
+                </FluentGridItem>
+                <FluentGridItem Xs="12" Md="6">
+                    <FluentCard Height="100%" Padding="@Padding.All5">
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12px">
+                            <FluentIcon Value="@(new Icons.Regular.Size32.Calendar())" />
+                            <FluentText As="TextTag.H3" Size="TextSize.Size500" Weight="TextWeight.Semibold">ROC date</FluentText>
+                            <FluentText As="TextTag.Paragraph">
+                                A <code>FluentDatePicker</code> that shows ROC (民國) years in both the text input and the popup
+                                calendar while still binding to a regular <code>DateTime</code>, using a custom
+                                <code>TaiwanCalendar</code> culture.
+                            </FluentText>
+                            <FluentAnchorButton Href="roc-date" Appearance="ButtonAppearance.Subtle">Open ROC date</FluentAnchorButton>
+                        </FluentStack>
+                    </FluentCard>
+                </FluentGridItem>
+            </FluentGrid>
+        </FluentStack>
+    </section>
 </FluentStack>

@@ -26,6 +26,7 @@ Custom date/time types for Taiwan's ROC calendar system:
 - **RocDateTime** - A `DateTime` equivalent using ROC year (e.g., 114 instead of 2025)
 - **RocDateOnly** - A `DateOnly` equivalent using ROC year
 - Includes System.Text.Json, EntityFrameworkCore and Dapper converters for serialization and database mapping
+- The `/roc-date` page in `samples/RazorSample` demonstrates a Fluent UI date picker with ROC years in both the input and calendar. Its custom `CultureInfo` keeps `Calendar` and `DateTimeFormat.Calendar` on the same `TaiwanCalendar`, so calendar navigation and formatting agree.
 
 ### Statistics
 

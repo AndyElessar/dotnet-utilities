@@ -1,6 +1,10 @@
 @import url('/_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css');
 
 /* Let native UI (scrollbars, form controls, popovers' system colors) follow the Fluent theme. */
+body {
+    color-scheme: light;
+}
+
 body[data-theme="dark"] {
     color-scheme: dark;
 }

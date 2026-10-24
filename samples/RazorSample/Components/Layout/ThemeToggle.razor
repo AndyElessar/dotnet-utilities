@@ -1,0 +1,33 @@
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+@* Blazor.theme is registered by the Fluent UI JS initializer, which also restores the persisted mode (or the system preference) on startup. *@
+@* Primary appearance keeps the on-brand foreground and hover tokens that match the brand-colored header. *@
+<FluentButton Appearance="ButtonAppearance.Primary"
+              IconOnly="true"
+              Title="@Label"
+              aria-label="@Label"
+              OnClick="@ToggleAsync">
+    <FluentIcon Class="hidden-if-dark" Value="@(new Icons.Regular.Size20.WeatherMoon())" />
+    <FluentIcon Class="hidden-if-light" Value="@(new Icons.Regular.Size20.WeatherSunny())" />
+</FluentButton>
+
+@code {
+    private bool _isDark;
+
+    private string Label => _isDark ? "Switch to light mode" : "Switch to dark mode";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isDark = await JS.InvokeAsync<bool>("Blazor.theme.isDarkMode");
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleAsync()
+    {
+        _isDark = await JS.InvokeAsync<bool>("Blazor.theme.switchTheme");
+    }
+}
